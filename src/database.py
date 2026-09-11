@@ -3,6 +3,7 @@ from collections.abc import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from src.config import get_database_url
+import streamlit as st
 
 
 class Base(DeclarativeBase):
@@ -11,12 +12,18 @@ class Base(DeclarativeBase):
 
 
 # Engine: manages the actual connection pool to PostgreSQL
-engine = create_engine(
-    get_database_url(),
-    echo=False,           # Set True to see SQL queries in terminal
-    pool_pre_ping=True,   # Test connections before use (avoids stale connections)
-    pool_recycle=300,     # Recycle connections after 5 minutes
-)
+@st.cache_resource
+def _get_engine():
+    """Create the SQLAlchemy engine once per Streamlit session."""
+    return create_engine(
+        get_database_url(),
+        echo=False,
+        pool_pre_ping=True,
+        pool_recycle=300,
+    )
+
+
+engine = _get_engine()
 
 # Session factory: creates new sessions on demand
 SessionLocal = sessionmaker(
