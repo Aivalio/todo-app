@@ -71,7 +71,7 @@ Layered architecture following the **Single Responsibility Principle**:
 
 ## 🚀 Live Demo
 
-👉 **[todo-app.streamlit.app](https://todo-app-67kh3kh2wrlwzcduqrwwsd.streamlit.app/)**
+👉 **https://todo-app-aivalio.streamlit.app/**
 
 
 ## 📦 Installation
