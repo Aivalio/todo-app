@@ -1,9 +1,11 @@
 """Database setup: engine, session factory, and declarative base."""
 from collections.abc import Generator
+
+import streamlit as st
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
 from src.config import get_database_url
-import streamlit as st
 
 
 class Base(DeclarativeBase):
@@ -11,7 +13,6 @@ class Base(DeclarativeBase):
     pass
 
 
-# Engine: manages the actual connection pool to PostgreSQL
 @st.cache_resource
 def _get_engine():
     """Create the SQLAlchemy engine once per Streamlit session."""
@@ -23,28 +24,19 @@ def _get_engine():
     )
 
 
-engine = _get_engine()
-
-# Session factory: creates new sessions on demand
-SessionLocal = sessionmaker(
-    bind=engine,
-    autoflush=False,
-    autocommit=False,
-    expire_on_commit=False,
-)
+def get_engine():
+    """Return the engine, creating it lazily on first call."""
+    return _get_engine()
 
 
 def get_session() -> Generator[Session, None, None]:
-    """Yield a database session and ensure it's closed afterwards.
-
-    Usage:
-        with next(get_session()) as session:
-            ...
-
-    Or with FastAPI-style dependency injection:
-        def endpoint(session: Session = Depends(get_session)):
-            ...
-    """
+    """Yield a database session and ensure it's closed afterwards."""
+    SessionLocal = sessionmaker(
+        bind=get_engine(),
+        autoflush=False,
+        autocommit=False,
+        expire_on_commit=False,
+    )
     session = SessionLocal()
     try:
         yield session
@@ -53,11 +45,7 @@ def get_session() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    """Create all tables in the database.
-
-    Only used for development. In production, use Alembic migrations.
-    """
-    # Import models so Base.metadata knows about them
+    """Create all tables in the database (dev only)."""
     from src.models import Task, User  # noqa: F401
 
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=get_engine())
