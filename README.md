@@ -73,6 +73,16 @@ Layered architecture following the **Single Responsibility Principle**:
 
 👉 **https://todo-app-aivalio.streamlit.app/**
 
+## 📸 Screenshots
+
+| Login                                | Register                                   |
+|--------------------------------------|--------------------------------------------|
+| ![Login](docs/screenshots/login.jpg) | ![Register](docs/screenshots/register.jpg) |
+
+| Task List (authenticated)            |
+|--------------------------------------|
+| ![Tasks](docs/screenshots/tasks.jpg) |
+
 
 ## 📦 Installation
 
